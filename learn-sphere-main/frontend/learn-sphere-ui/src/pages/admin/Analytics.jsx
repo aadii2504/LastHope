@@ -164,14 +164,44 @@ export default function Analytics() {
       const headers = [
         { key: "studentName", label: "Student Name" },
         { key: "coursesEnrolled", label: "Course Count" },
-        { key: "courseNames", label: "Courses Name" }, // Added this
+        { key: "courseNames", label: "Courses Name" },
         { key: "grade", label: "Grade" },
         { key: "score", label: "Score" },
         { key: "status", label: "Status" },
         { key: "compliance", label: "Compliance" },
         { key: "attendance", label: "Attendance Dates" },
       ];
-      exportToCSV(filteredStudentData, "student-report.csv", headers);
+
+      const csvData = [];
+      filteredStudentData.forEach((student) => {
+        if (student.enrollments && student.enrollments.length > 0) {
+          student.enrollments.forEach((enrollment) => {
+            csvData.push({
+              studentName: student.studentName,
+              coursesEnrolled: student.coursesEnrolled,
+              courseNames: enrollment.courseTitle || "NA",
+              grade: enrollment.grade || "NA",
+              score: enrollment.score ?? "NA",
+              status: enrollment.status || "NA",
+              compliance: enrollment.compliance || "NA",
+              attendance: enrollment.attendance || "NA",
+            });
+          });
+        } else {
+          csvData.push({
+            studentName: student.studentName,
+            coursesEnrolled: student.coursesEnrolled,
+            courseNames: "NA",
+            grade: "NA",
+            score: "NA",
+            status: "NA",
+            compliance: "NA",
+            attendance: "NA",
+          });
+        }
+      });
+
+      exportToCSV(csvData, "student-report.csv", headers);
     } else {
       const headers = [
         { key: "title", label: "Course Name" },
